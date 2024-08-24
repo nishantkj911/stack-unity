@@ -2,9 +2,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Numerics;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
+using Object = UnityEngine.Object;
 using Quaternion = UnityEngine.Quaternion;
 using Vector3 = UnityEngine.Vector3;
 
@@ -13,6 +15,8 @@ public class GameController : MonoBehaviour
     public float maxLimitBlock = 2.5f;
     public GameObject blockPrefab;
     public float errorMargin = 0.25f; // TODO: Modify to actual value.
+    public int Score { get; private set; } = 0;
+    public event EventHandler OnGameOver = delegate { }; // Giving a basic subscriber.
 
     private float _blockHeight;
 
@@ -21,6 +25,12 @@ public class GameController : MonoBehaviour
 
     private GameObject _currentBlock;
     private EulerAxis _currentEulerAxis = EulerAxis.X; // TODO: Randomize this
+
+    private void MyOnGameOverHandler(object sender, EventArgs e)
+    {
+        Debug.Log("Game Over!! Score: " + Score);
+        _currentBlock.AddComponent<DestroyOnDiscarded>();
+    }
 
     private GameObject[] CutBlock(GameObject currentBlock, Vector3 newScale, Vector3 newBlockCenter,
         Vector3 cutBlockScale,
@@ -34,11 +44,12 @@ public class GameController : MonoBehaviour
             var cbRb = currentBlock.GetComponent<Rigidbody>();
             cbRb.useGravity = true;
             cbRb.isKinematic = false;
-            throw new Exception("Invalid Block Size");                                            // TODO: Change the type of exception to be more specific.
+            throw new Exception("Invalid Block Size"); // TODO: Change the type of exception to be more specific.
         }
 
         Destroy(currentBlock);
 
+        // TODO: Name the block appropriately to be understandable in the hierarchy
         var newBlock = Instantiate(_currentBlock, newBlockCenter, Quaternion.identity);
         newBlock.transform.localScale = newScale;
 
@@ -52,10 +63,16 @@ public class GameController : MonoBehaviour
         return new[] { newBlock, cutBlock };
     }
 
+    public void RestartGame()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
     // Start is called before the first frame update
     void Awake()
     {
         _blockHeight = blockPrefab.transform.localScale.y;
+        OnGameOver += MyOnGameOverHandler;
     }
 
     void Start()
@@ -66,6 +83,7 @@ public class GameController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
         if (!Input.GetKeyDown(KeyCode.Space)) return;
         // Debug.Log("space key pressed");
 
@@ -161,14 +179,15 @@ public class GameController : MonoBehaviour
                         break;
                 }
             }
-            catch (Exception exception)
+            catch (Exception)
             {
                 // Case when block completely misaligns and the game ends.
-                Debug.Log("Game Over");
+                OnGameOver(this, EventArgs.Empty);
                 return;
             }
         }
 
+        Score++;
 
         // Increase next block's height
         blockCenter.transform.position = new Vector3(newCurrentBlock.transform.position.x, blockCenter.transform.position.y + _blockHeight, newCurrentBlock.transform.position.z);

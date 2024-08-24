@@ -19,7 +19,7 @@ public class BlockMovement : MonoBehaviour
     public EulerAxis axis;
 
     [SerializeField] private float timePeriod = 2; // in seconds
-    [SerializeField] private float blockMomentum = 1.5f;
+    // [SerializeField] private float blockMomentum = 1.5f;
 
     private GameController _gameController;
     private float _maxAxisLimit;
