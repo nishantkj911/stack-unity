@@ -162,4 +162,3 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   axis: 0
   timePeriod: 2
-  blockMomentum: 1.5

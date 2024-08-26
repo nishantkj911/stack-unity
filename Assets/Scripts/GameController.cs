@@ -15,7 +15,7 @@ public class GameController : MonoBehaviour
     public float maxLimitBlock = 2.5f;
     public GameObject blockPrefab;
     public float errorMargin = 0.25f; // TODO: Modify to actual value.
-    public int Score { get; private set; } = 0;
+    public int Score { get; private set; } = 0;             // Note: I thought of making this private and publishing score via GameOver event, but the score data is needed all the time. Hence, making it publicly gettable only. 
     public event EventHandler OnGameOver = delegate { }; // Giving a basic subscriber.
 
     private float _blockHeight;

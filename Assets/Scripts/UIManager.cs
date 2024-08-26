@@ -7,10 +7,9 @@ using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
-    public GameController gameController;
-    public TMP_Text scoreText, gameOverScoreText;
-    
-    public GameObject gameUIPanel, gameOverPanel;
+    [SerializeField] private GameController gameController;
+    [SerializeField] private TMP_Text scoreText, gameOverScoreText;
+    [SerializeField] private GameObject gameUIPanel, gameOverPanel;
     
     private void Awake()
     {
